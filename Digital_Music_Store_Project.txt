@@ -1,0 +1,67 @@
+/* QUERY1-the query used for first insight
+ Q1:Which customers have the highest purchase?*/
+
+ SELECT c.CustomerId,SUM(i.Total) AS Total_amount
+ FROM Customer c
+ JOIN Invoice i
+ ON c.CustomerId =i.CustomerId
+
+ GROUP BY c.CustomerId
+ ORDER BY Total_amount DESC
+ LIMIT 10;
+
+/* QUERY2-the query used for second insight
+ Q2:Which Albums have the highest purchase?*/
+
+SELECT a.Title AS Album_title , SUM((il.Unitprice*il.Quantity)) AS Total_Amount 
+FROM InvoiceLine il
+JOIN Track t
+ON il.TrackId=t.TrackId
+JOIN Album a
+ON t.AlbumId=a.AlbumId
+
+GROUP BY a.Title
+ORDER BY Total_Amount DESC
+LIMIT 10;
+
+/* QUERY3-the query used for third insight
+ Q3:Which artist has earned the most according to the InvoiceLines?*/
+ 
+ SELECT ar.ArtistId,ar.name AS Artist_Name, SUM((il.Unitprice*il.Quantity)) AS Total_Amount
+ FROM InvoiceLine il
+ JOIN Track t
+ ON il.TrackId=t.TrackId
+ JOIN Album a
+ ON t.AlbumId= a.AlbumId
+ JOIN Artist ar
+ ON a.ArtistId=ar.ArtistId
+ 
+ GROUP BY ar.ArtistId
+ ORDER BY Total_Amount DESC
+ LIMIT 10;
+
+/* QUERY4-the query used for forth insight
+ Q4:Are the top Albums have the highest sales in the USA?*/
+
+SELECT a.Title AS Album_title , SUM((il.Unitprice*il.Quantity)) AS Total_amount,
+
+CASE WHEN a.Title="Battlestar Galactica (Classic), Season 1" OR a.Title="The Office, Season 3" 
+OR a.Title="Minha Historia" OR a.Title="Lost, Season 2" OR a.Title="Heroes, Season 1" 
+OR  a.Title="Greatest Hits" OR a.Title="Unplugged"OR a.Title="Battlestar Galactica, Season 3" 
+OR  a.Title="Lost, Season 3" OR a.Title="Acústico" THEN "YES" 
+ELSE"NO" END AS Is_it_one_of_the_popular_songs
+
+/*Albums'titles were chosen based on question2 results */
+
+FROM Invoice i
+JOIN InvoiceLine il
+ON il.InvoiceId= i. InvoiceId
+JOIN Track t
+ON il.TrackId=t.TrackId
+JOIN Album a
+ON t.AlbumId=a.AlbumId
+
+WHERE i.BillingCountry="USA"
+GROUP BY a.Title
+ORDER BY Total_Amount DESC
+LIMIT 10;
